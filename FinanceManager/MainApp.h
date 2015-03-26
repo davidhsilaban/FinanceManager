@@ -1,15 +1,24 @@
 #pragma once
 
 #include <queue>
+#include <QtCore/QDate>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 #include <QtGui/QWidget>
 #include <QtGui/QMainWindow>
-#include <Windows.h>
+#include <QtGui/QListWidgetItem>
+#include <QtGui/QWindowsStyle>
+#include <QtGui/QStackedWidget>
+#include <QtGui/QGridLayout>
+#include <QtGui/QDateEdit>
+#include <QtGui/QTableWidget>
+#include <QtGui/QSplitter>
+#include <ShObjIdl.h>
 
 #include "resource.h"
 #include "sqlite3.h"
+#include "FinanceData.h"
 
 class QPushButton;
 
@@ -32,6 +41,9 @@ protected:
 	// Events
 	void closeEvent(QCloseEvent *event);
 
+	// Handle Windows(R) specific window events
+	bool winEvent(MSG *message, long *result);
+
 private slots:
 	void commitData();
 	void save();
@@ -40,11 +52,13 @@ private slots:
 	void openFile();
 	void newFile();
 	bool closeDatabase();
+	void updateTaskbarProgress(qint64 current, qint64 total);
+	void onFinanceDataFinished();
 
 private:
 	// Structures
 	typedef struct {
-		QString id; // ID = type + (day+month+year+len(desc)); type = "I/O"
+		QString id; // ID = type + (day+month+year+len(desc)); type = "I/O/L"
 		QDate date;
 		QString desc;
 		double amount;
@@ -52,6 +66,8 @@ private:
 
 	std::queue<_tPendingData> pendingData;
 	int cntPendingData;
+	static const UINT uTaskbarBtnCreatedMsg;
+	ITaskbarList3 *pITL;
 
 private:
 
@@ -113,6 +129,8 @@ private:
 	bool fileOpened;
 	bool fileChanged;
 
+	FinanceData *financeData;
+
 	// Functions
 private:
 	//QLayout* createMainScreen();
@@ -132,6 +150,9 @@ public:
 	void insertTransaction(QDate date, QString type, QString category, QString desc, double amount);
 	QStringList getCategories();
 	QSqlDatabase getFinanceDatabase();
+	FinanceData *getFinanceDataInstance();
+	void setTaskbarProgress(quint64 value, quint64 max_value);
+	void showTaskbarProgress(bool show);
 
 };
 

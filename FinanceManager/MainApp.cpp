@@ -4,10 +4,12 @@
 #include "MainApp.h"
 #include "MainPages.h"
 
-#include "moc_MainApp.cpp"
+//#include "moc_MainApp.cpp"
 
 #define CHECK_SQLITE(x) printf("SQLite error: %d\n", x);
 #define printSQLError(q) qDebug() << "QSQLITE error: " << q.lastError().text();
+
+const UINT MainApp::uTaskbarBtnCreatedMsg = RegisterWindowMessage(L"TaskbarButtonCreated");
 
 int main(int argc, char* argv[])
 {
@@ -36,6 +38,10 @@ MainApp::MainApp(QWidget* parent)
 
 	// Setup database access
 	dbFinance = QSqlDatabase::addDatabase("QSQLITE", "main_db_connection");
+	financeData = new FinanceData();
+	financeData->setParent(this);
+	connect(financeData, SIGNAL(onDownloadProgress(qint64,qint64)), this, SLOT(updateTaskbarProgress(qint64,qint64)));
+	connect(financeData, SIGNAL(onDownloadFinished()), this, SLOT(onFinanceDataFinished()));
 
 	// Create menu bar items
 	createMenusAndToolbars();
@@ -54,6 +60,20 @@ MainApp::MainApp(QWidget* parent)
 	setDatabaseChanged(false);
 }
 
+bool MainApp::winEvent(MSG *message, long *result)
+{
+	if (message->message == uTaskbarBtnCreatedMsg) {
+		QMessageBox::information(0, "Information", "Taskbar Button Created");
+		QMessageBox::information(0, "Windows Version", QString("Windows version %1").arg(QSysInfo::windowsVersion()));
+		if ((QSysInfo::windowsVersion() & QSysInfo::WV_NT_based) >= QSysInfo::WV_WINDOWS7) {
+			CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (LPVOID*)&pITL);
+		}
+		result = 0;
+		return true;
+	}
+	return false;
+}
+
 void MainApp::closeEvent(QCloseEvent *event)
 {
 	if (!closeDatabase()) {
@@ -64,7 +84,7 @@ void MainApp::closeEvent(QCloseEvent *event)
 
 MainApp::~MainApp()
 {
-
+	if (pITL) pITL->Release();
 }
 
 void MainApp::setDatabaseOpened(bool opened)
@@ -231,14 +251,14 @@ void MainApp::createDockItems()
 	lstMainMenu->setSpacing(12);
 
 	// Load the "Insert Data" icon from the resource file
-	hInsertPng = FindResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_INSERT), "PNG");
+	hInsertPng = FindResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_INSERT), L"PNG");
 	hInsertIcon = LoadResource(GetModuleHandle(NULL), hInsertPng);
 	lenInsertPng = SizeofResource(GetModuleHandle(NULL), hInsertPng);
 	pmInsertIcon = new QPixmap();
 	pmInsertIcon->loadFromData((uchar*)LockResource(hInsertIcon), lenInsertPng);
 
 	// Load the "View Data" icon from the resource file
-	hViewPng = FindResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_VIEW), "PNG");
+	hViewPng = FindResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_VIEW), L"PNG");
 	hViewIcon = LoadResource(GetModuleHandle(NULL), hViewPng);
 	lenViewPng = SizeofResource(GetModuleHandle(NULL), hViewPng);
 	pmViewIcon = new QPixmap();
@@ -489,4 +509,34 @@ QStringList MainApp::getCategories()
 QSqlDatabase MainApp::getFinanceDatabase()
 {
 	return dbFinance;
+}
+
+FinanceData *MainApp::getFinanceDataInstance()
+{
+	return financeData;
+}
+
+void MainApp::showTaskbarProgress(bool show) {
+	if (pITL) {
+		if (show) {
+			pITL->SetProgressState(this->winId(), TBPF_NORMAL);
+		} else {
+			pITL->SetProgressState(this->winId(), TBPF_NOPROGRESS);
+		}
+	}
+}
+
+void MainApp::setTaskbarProgress(quint64 value, quint64 max_value) {
+	if (pITL) {
+		pITL->SetProgressValue(this->winId(), value, max_value);
+	}
+}
+
+void MainApp::updateTaskbarProgress(qint64 current, qint64 total) {
+	showTaskbarProgress(true);
+	setTaskbarProgress(current, total);
+}
+
+void MainApp::onFinanceDataFinished() {
+	showTaskbarProgress(false);
 }

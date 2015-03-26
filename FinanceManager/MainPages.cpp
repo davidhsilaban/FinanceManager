@@ -2,7 +2,7 @@
 
 #include "MainPages.h"
 
-#include "moc_MainPages.cpp"
+//#include "moc_MainPages.cpp"
 
 NoFileOpenedPage::NoFileOpenedPage(QWidget *parent)
 	: QWidget(parent)
@@ -100,9 +100,9 @@ InsertDataPage::InsertDataPage(QWidget *parent)
 	pageLayout->addWidget(grpMain);
 
 	// Add button actions
-	connect(btnSubmit, SIGNAL(pressed()), this, SLOT(addTransaction()));
-	connect(btnReset, SIGNAL(pressed()), this, SLOT(resetForm()));
-	connect(btnRefresh, SIGNAL(pressed()), this, SLOT(refreshCategories()));
+	connect(btnSubmit, SIGNAL(clicked()), this, SLOT(addTransaction()));
+	connect(btnReset, SIGNAL(clicked()), this, SLOT(resetForm()));
+	connect(btnRefresh, SIGNAL(clicked()), this, SLOT(refreshCategories()));
 
 	setLayout(pageLayout);
 }
@@ -131,13 +131,15 @@ void InsertDataPage::resetForm()
 void InsertDataPage::refreshCategories()
 {
 	// Read available categories from the database
-	QStringList categories = myParent->getCategories();
+	//QStringList categories = myParent->getCategories();
 
 	// Clear the categories combo box items
 	cboCategory->clear();
 
 	// Insert the categories into the combo box
-	cboCategory->addItems(categories);
+	//cboCategory->addItems(categories);
+
+	myParent->getFinanceDataInstance()->getCategories();
 }
 
 /*********************************************
@@ -217,7 +219,7 @@ ViewDataPage::ViewDataPage(QWidget *parent)
 	tblTransaction->setModel(tblModel);
 
 	// Connect signals
-	connect(btnRefresh, SIGNAL(pressed()), this, SLOT(refreshTable()));
+	connect(btnRefresh, SIGNAL(clicked()), this, SLOT(refreshTable()));
 
 	mainLayout->addWidget(grpFilter);
 	mainLayout->addWidget(tblTransaction);
@@ -239,7 +241,7 @@ void ViewDataPage::refreshTable()
 
 	tblModel->select();
 	tblTransaction->setModel(tblModel);
-	tblTransaction->setItemDelegate();
+	//tblTransaction->setItemDelegate();
 }
 
 /*********************************************
