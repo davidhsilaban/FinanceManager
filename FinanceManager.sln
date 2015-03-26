@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FinanceManager", "FinanceManager\FinanceManager.vcxproj", "{974FABD9-C478-49D3-A872-AD027F1CC37A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FinanceManager", "FinanceManager\FinanceManager.vcxproj", "{D30AC07A-8D33-4D73-8E63-DE9F5D33FDC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{974FABD9-C478-49D3-A872-AD027F1CC37A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{974FABD9-C478-49D3-A872-AD027F1CC37A}.Debug|Win32.Build.0 = Debug|Win32
-		{974FABD9-C478-49D3-A872-AD027F1CC37A}.Release|Win32.ActiveCfg = Release|Win32
-		{974FABD9-C478-49D3-A872-AD027F1CC37A}.Release|Win32.Build.0 = Release|Win32
+		{D30AC07A-8D33-4D73-8E63-DE9F5D33FDC1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D30AC07A-8D33-4D73-8E63-DE9F5D33FDC1}.Debug|Win32.Build.0 = Debug|Win32
+		{D30AC07A-8D33-4D73-8E63-DE9F5D33FDC1}.Release|Win32.ActiveCfg = Release|Win32
+		{D30AC07A-8D33-4D73-8E63-DE9F5D33FDC1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
